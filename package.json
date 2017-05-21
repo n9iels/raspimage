@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "get-pixels": "^3.3.0",
+    "jimp": "^0.2.28",
     "restify": "^4.3.0"
   }
 }
