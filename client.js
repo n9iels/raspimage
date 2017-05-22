@@ -10,8 +10,14 @@ var client = restify.createJsonClient({
 var fileStream = fs.createReadStream('./images/xbox.png', 'binary');
 
 // Read file
+var imageData = '';
+
 fileStream.on('data', function (data) {
-    client.post('/upload', {data}, function (err, req, res, obj) {
+    imageData += data;
+});
+
+fileStream.on('end', function () {
+    client.post('/upload', { imageData }, function (err, req, res, obj) {
         if (err) {
             console.log(err)
         }

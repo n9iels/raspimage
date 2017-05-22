@@ -9,15 +9,29 @@ var server = restify.createServer({ name: 'Raspberry Pi Image Service' });
 server.use(restify.gzipResponse());
 server.use(restify.bodyParser());
 
+// Write to a file async
+function writeFile(name, data) {
+    return new Promise(function(resolve, reject) {
+        fs.writeFile('./tmp/new.png', data, 'binary', function (err) {
+            if (err) {
+                reject(err)
+            }
+
+            resolve();
+        });
+    });
+}
+
+function editImage(image) {
+    return new Promise(function(resolve, reject) {
+        image.grayscale().rotate(90).write('./images/new.png', resolve())
+    });
+}
+
+// Routes
 server.post('/upload', function (req, res, next) {
-    fs.writeFile('./tmp/new.png', req.body.data, 'binary', function (err) {
-        if (err) throw err;
-
-        Jimp.read('./tmp/new.png', function(err, image) {
-            if (err) throw err;
-
-            image.grayscale().rotate(90).write('./images/new.png');
-        }).then(res.send('done'))
+    writeFile('./tmp/new.png', req.body.imageData).then(function() {
+        Jimp.read('./tmp/new.png').then((image) => editImage(image).then(res.send('done')))
     });
 });
 
