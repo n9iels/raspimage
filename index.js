@@ -1,6 +1,7 @@
 var restify = require('restify');
 var fs = require('fs')
 var Jimp = require("jimp");
+var randomstring = require("randomstring");
 
 // Create server
 var server = restify.createServer({ name: 'Raspberry Pi Image Service' });
@@ -11,8 +12,8 @@ server.use(restify.bodyParser());
 
 // Write to a file async
 function writeFile(name, data) {
-    return new Promise(function(resolve, reject) {
-        fs.writeFile('./tmp/new.png', data, 'binary', function (err) {
+    return new Promise(function (resolve, reject) {
+        fs.writeFile(name, data, 'binary', function (err) {
             if (err) {
                 reject(err)
             }
@@ -23,15 +24,24 @@ function writeFile(name, data) {
 }
 
 function editImage(image) {
-    return new Promise(function(resolve, reject) {
-        image.grayscale().rotate(90).write('./images/new.png', resolve())
+    return new Promise(function (resolve, reject) {
+        //image.grayscale().rotate(90).write('./images/new.png', resolve())
+        image.grayscale().rotate(90).getBuffer(Jimp.MIME_PNG, function (err, buff) {
+            if (err) {
+                reject(err);
+            }
+
+            resolve(buff);
+        })
     });
 }
 
 // Routes
 server.post('/upload', function (req, res, next) {
-    writeFile('./tmp/new.png', req.body.imageData).then(function() {
-        Jimp.read('./tmp/new.png').then((image) => editImage(image).then(res.send('done')))
+    var randomName = randomstring.generate();
+    writeFile('./tmp/' + randomName + '.png', req.body.imageData).then(function () {
+        Jimp.read('./tmp/' + randomName + '.png')
+            .then((image) => editImage(image).then((buff) => res.send(buff)))
     });
 });
 

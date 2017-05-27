@@ -22,6 +22,8 @@ fileStream.on('end', function () {
             console.log(err)
         }
 
-        console.log(res.body)
+        fs.writeFile('./images/new.png', obj, {encoding: 'base64'}, function(err) {
+            if (err) throw err;
+        });
     })
 });
