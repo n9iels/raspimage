@@ -3,7 +3,7 @@ var fs = require('fs');
 
 // Create client
 var client = restify.createJsonClient({
-    url: 'http://localhost:8080',
+    url: 'http://84.84.245.29:1686',
     version: '*'
 });
 
