@@ -379,5 +379,6 @@ __pycache__/
 
 # End of https://www.gitignore.io/api/node,windows,visualstudio,visualstudiocode
 
-# Ignore the tmp folder
+# Ignore the tmp and images folder
 /tmp
+/images
