@@ -46,6 +46,7 @@ server.post('/upload', function (req, res, next) {
             .then((image) => editImage(image)
                 .then(console.timeEnd('execution'))
                 .then((buff) => res.send(buff))
+                .then(fs.unlink('./tmp/' + randomName + '.png'))
                 .catch((err) => res.send(err, 500)))
             .catch((err) => res.send(err, 500));
     }).catch((err) => res.send(err, 500));
