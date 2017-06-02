@@ -40,10 +40,15 @@ function editImage(image) {
 server.post('/upload', function (req, res, next) {
     console.time('execution');
     var randomName = randomstring.generate();
+
     writeFile('./tmp/' + randomName + '.png', req.body.imageData).then(function () {
         Jimp.read('./tmp/' + randomName + '.png')
-            .then((image) => editImage(image).then(console.timeEnd('execution')).then((buff) => res.send(buff)))
-    });
+            .then((image) => editImage(image)
+                .then(console.timeEnd('execution'))
+                .then((buff) => res.send(buff))
+                .catch((err) => res.send(err, 500)))
+            .catch((err) => res.send(err, 500));
+    }).catch((err) => res.send(err, 500));
 });
 
 server.listen(8080);
