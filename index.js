@@ -2,6 +2,7 @@ var restify = require('restify');
 var fs = require('fs')
 var Jimp = require("jimp");
 var randomstring = require("randomstring");
+var fileHelper = require("./helpers/file");
 
 // Create server
 var server = restify.createServer({ name: 'Raspberry Pi Image Service' });
@@ -10,22 +11,8 @@ var server = restify.createServer({ name: 'Raspberry Pi Image Service' });
 server.use(restify.gzipResponse());
 server.use(restify.bodyParser());
 
-// Write to a file async
-function writeFile(name, data) {
-    return new Promise(function (resolve, reject) {
-        fs.writeFile(name, data, 'binary', function (err) {
-            if (err) {
-                reject(err)
-            }
-
-            resolve();
-        });
-    });
-}
-
 function editImage(image) {
     return new Promise(function (resolve, reject) {
-        //image.grayscale().rotate(90).write('./images/new.png', resolve())
         image.grayscale().rotate(90).getBuffer(Jimp.MIME_PNG, function (err, buff) {
             if (err) {
                 reject(err);
@@ -38,14 +25,21 @@ function editImage(image) {
 
 // Routes
 server.post('/upload', function (req, res, next) {
-    console.time('execution');
+    // Create a random name for the file
     var randomName = randomstring.generate();
 
-    writeFile('./tmp/' + randomName + '.png', req.body.imageData).then(function () {
+    fileHelper.writeFileAsync('./tmp/' + randomName + '.png', req.body.imageData).then(function () {
+        // Start counting execution time after the file is stored
+        var start = process.hrtime();
+
         Jimp.read('./tmp/' + randomName + '.png')
             .then((image) => editImage(image)
-                .then(console.timeEnd('execution'))
-                .then((buff) => res.send(buff))
+                .then(function(buff) {
+                    // Image is processed, stop execution time
+                    var end = process.hrtime(start);
+
+                    res.send({"buff":buff, "time":end})
+                })
                 .then(fs.unlink('./tmp/' + randomName + '.png'))
                 .catch((err) => res.send(err, 500)))
             .catch((err) => res.send(err, 500));

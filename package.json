@@ -11,6 +11,7 @@
   "dependencies": {
     "get-pixels": "^3.3.0",
     "jimp": "^0.2.28",
+    "node-fetch": "^1.7.1",
     "randomstring": "^1.1.5",
     "restify": "^4.3.0"
   }

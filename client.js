@@ -1,35 +1,44 @@
 var restify = require('restify');
 var fs = require('fs');
+var fileHelper = require('./helpers/file')
 
 // Create client
 var client = restify.createJsonClient({
-    url: 'http://84.84.245.29:1686',
+    url: 'http://localhost:8080',
     version: '*'
 });
 
-var imagepath = process.argv[2];
+function postImage(imageData, file, cb) {
+    client.post('/upload', { imageData }, function(err, req, res, obj) {
+        if (err) throw err;
 
-if (imagepath === undefined) {
-    console.log('Please provide a path to a image as first argument');
-} else {
-    var fileStream = fs.createReadStream(imagepath, 'binary');
+        fs.writeFile('./images/' + file + 'new.png', new Buffer(obj.buff.data), { encoding: 'binary' }, function(err) {
+            if (err) throw err;
 
-    // Read file
-    var imageData = '';
+            // Write to CSV file
+            var format = file.split('.')[0];
 
-    fileStream.on('data', function (data) {
-        imageData += data;
-    });
-
-    fileStream.on('end', function () {
-        client.post('/upload', { imageData }, function (err, req, res, obj) {
-            if (err) {
-                console.log(err.message)
-            }
-
-            fs.writeFile('./images/new.png', obj, { encoding: 'base64' }, function (err) {
+            fs.appendFile('results.csv', format + ',' + (obj.time[0] + (obj.time[1] / 1000000000)) + "\n", function(err) {
                 if (err) throw err;
             });
-        })
+        });
+
+        cb();
     });
 }
+
+//var imagepath = process.argv[2];
+var imagepath = "images/todo";
+
+
+var items = fs.readdirSync(imagepath);
+var execute = function(count) {
+    if (count < items.length) {
+        var file = items[count];
+
+        return fileHelper.imageToFilestream(imagepath + "/" + file).then((imageData) => postImage(imageData, file, () => execute(count + 1)))
+    }
+}
+
+execute(0);
+
