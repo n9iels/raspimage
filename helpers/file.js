@@ -12,7 +12,7 @@ class FileHelper {
                 imageData += data;
             });
 
-            fileStream.on('end', () => { console.log('second'); resolve(imageData); });
+            fileStream.on('end', () => { resolve(imageData) });
             fileStream.on('error', (err) => reject(err))
         });
     }
@@ -27,18 +27,6 @@ class FileHelper {
                 resolve();
             });
         });
-    }
-
-    ForEachItemInDirectory(path, cb) {
-        var items = fs.readdirSync(path);
-
-        var execute = function (count) {
-            if (count < items.length) {
-                cb(items[count]).then(execute(count + 1))
-            }
-        }
-
-        execute(0);
     }
 }
 

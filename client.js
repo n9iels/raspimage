@@ -35,7 +35,7 @@ var items = fs.readdirSync(imagepath);
 var execute = function(count) {
     if (count < items.length) {
         var file = items[count];
-
+        console.log("processing: " + file);
         return fileHelper.imageToFilestream(imagepath + "/" + file).then((imageData) => postImage(imageData, file, () => execute(count + 1)))
     }
 }
