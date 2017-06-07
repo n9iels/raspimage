@@ -37,12 +37,14 @@ server.post('/upload', function (req, res, next) {
 
         Jimp.read('./tmp/' + randomName + '.png')
             .then((image) => editImage(image)
-                .then(fs.unlink('./tmp/' + randomName + '.png'))
                 .then(function(buff) {
                     // Image is processed, stop execution time
                     var end = process.hrtime(start);
 
-                    res.send({"buff":buff, "time":end})
+                    // Clean tmp folder
+                    fs.unlink('./tmp/' + randomName + '.png', function(err) {
+                        res.send({"buff":buff, "time":end})
+                    })
                 })
                 .catch((err) => res.send(err, 500)))
             .catch((err) => res.send(err, 500));
