@@ -7,6 +7,9 @@ var fileHelper = require("./helpers/file");
 // Create server
 var server = restify.createServer({ name: 'Raspberry Pi Image Service' });
 
+// Set timeout to 5 minutes
+server.server.setTimeout(60000*5);
+
 // Append Middleware
 server.use(restify.gzipResponse());
 server.use(restify.bodyParser());
@@ -34,13 +37,13 @@ server.post('/upload', function (req, res, next) {
 
         Jimp.read('./tmp/' + randomName + '.png')
             .then((image) => editImage(image)
+                .then(fs.unlink('./tmp/' + randomName + '.png'))
                 .then(function(buff) {
                     // Image is processed, stop execution time
                     var end = process.hrtime(start);
 
                     res.send({"buff":buff, "time":end})
                 })
-                .then(fs.unlink('./tmp/' + randomName + '.png'))
                 .catch((err) => res.send(err, 500)))
             .catch((err) => res.send(err, 500));
     }).catch((err) => res.send(err, 500));

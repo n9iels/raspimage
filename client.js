@@ -19,7 +19,7 @@ function postImage(imageData, file, cb) {
                 // Write to CSV file
                 var format = file.split('.')[0];
 
-                fs.appendFile('results.csv', format + ',' + (obj.time[0] + (obj.time[1] / 1000000000)) + "\n", function(err) {
+                fs.appendFile('results.csv', format + ';' + (obj.time[0] + (obj.time[1] / 1000000000)) + "\n", function(err) {
                     if (err) throw err;
                 });
             });
