@@ -41,6 +41,7 @@ server.post('/upload', function (req, res, next) {
                     // Image is processed, stop execution time
                     var end = process.hrtime(start);
 
+                    res.send({"time":end})
                     // Clean tmp folder
                     // fs.unlink('./tmp/' + randomName + '.png', function(err) {
                     //     res.send({"time":end})
