@@ -42,9 +42,9 @@ server.post('/upload', function (req, res, next) {
                     var end = process.hrtime(start);
 
                     // Clean tmp folder
-                    fs.unlink('./tmp/' + randomName + '.png', function(err) {
-                        res.send({"time":end})
-                    })
+                    // fs.unlink('./tmp/' + randomName + '.png', function(err) {
+                    //     res.send({"time":end})
+                    // })
                 })
                 .catch((err) => res.send(err, 500)))
             .catch((err) => res.send(err, 500));
