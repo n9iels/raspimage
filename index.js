@@ -16,7 +16,7 @@ server.use(restify.bodyParser());
 
 function editImage(image) {
     return new Promise(function (resolve, reject) {
-        image.grayscale().rotate(90).getBuffer(Jimp.MIME_PNG, function (err, buff) {
+        image.resize(3500,3500, Jimp.RESIZE_BILINEAR).getBuffer(Jimp.MIME_PNG, function (err, buff) {
             if (err) {
                 reject(err);
             }
