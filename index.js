@@ -21,7 +21,7 @@ function editImage(image) {
                 reject(err);
             }
 
-            resolve(buff);
+            resolve();
         })
     });
 }
@@ -37,13 +37,13 @@ server.post('/upload', function (req, res, next) {
 
         Jimp.read('./tmp/' + randomName + '.png')
             .then((image) => editImage(image)
-                .then(function(buff) {
+                .then(function() {
                     // Image is processed, stop execution time
                     var end = process.hrtime(start);
 
                     // Clean tmp folder
                     fs.unlink('./tmp/' + randomName + '.png', function(err) {
-                        res.send({"buff":buff, "time":end})
+                        res.send({"time":end})
                     })
                 })
                 .catch((err) => res.send(err, 500)))
